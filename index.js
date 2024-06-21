@@ -61,11 +61,24 @@ app.use("/posts", postRoutes);
 app.use("/messages", messageRoutes);
 
 // SERVE REACT APP
-app.use(express.static(path.join(__dirname, './../client/build')));
+const buildPath = path.join(__dirname, './../client/build');
+app.use(express.static(buildPath));
+
+// Middleware to set MIME type for CSS files
+app.use((req, res, next) => {
+  if (req.url.endsWith('.css')) {
+    res.setHeader('Content-Type', 'text/css');
+  }
+  next();
+});
 
 // Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './../client/build', 'index.html'));
+  res.sendFile(path.join(buildPath, 'index.html'), (err) => {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
 
 // MONGOOSE SETUP
