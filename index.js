@@ -18,7 +18,7 @@ import { verifyToken } from "./middleware/auth.js";
 import User from "./models/User.js";
 import Post from "./models/Post.js";
 import { users, posts } from "./data/index.js";
-import { app, server} from "./socket/socket.js"
+import { app, server } from "./socket/socket.js";
 
 // CONFIGURATIONS
 const __filename = fileURLToPath(import.meta.url);
@@ -62,8 +62,10 @@ app.use("/messages", messageRoutes);
 
 // SERVE REACT APP
 app.use(express.static(path.join(__dirname, './../client/build')));
+
+// Handle React routing, return all requests to React app
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './../client/build/index.html'));
+  res.sendFile(path.join(__dirname, './../client/build', 'index.html'));
 });
 
 // MONGOOSE SETUP
