@@ -4,13 +4,14 @@ import {getReceiverSocketId, io} from "../socket/socket.js";
 
 export const sendMessage = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { text } = req.body;
     const { id: receiverId } = req.params;
     const senderId = req.user.id;
 
-    console.log('Sender ID:', senderId);
-    console.log('Receiver ID:', receiverId);
-    console.log('Message:', message);
+    let imageUrl;
+    if (req.file) {
+      imageUrl = req.file.filename;
+    }
 
     let conversation = await Conversation.findOne({
       participants: { $all: [senderId, receiverId] },
@@ -25,7 +26,8 @@ export const sendMessage = async (req, res) => {
     const newMessage = new Message({
       senderId,
       receiverId,
-      message,
+      text,
+      imageUrl,
     });
 
     if (newMessage) {
@@ -35,9 +37,10 @@ export const sendMessage = async (req, res) => {
     await Promise.all([conversation.save(), newMessage.save()]);
 
     const receiverSocketId = getReceiverSocketId(receiverId);
-    if(receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage",newMessage)
-    }
+		if (receiverSocketId) {
+			// io.to(<socket_id>).emit() used to send events to specific client
+			io.to(receiverSocketId).emit("newMessage", newMessage);
+		}
 
     res.status(201).json(newMessage);
   } catch (error) {
@@ -46,13 +49,11 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+
 export const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;
     const senderId = req.user.id;
-
-    console.log('Sender ID:', senderId);
-    console.log('User to Chat ID:', userToChatId);
 
     const conversation = await Conversation.findOne({
       participants: { $all: [senderId, userToChatId] },

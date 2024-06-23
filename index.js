@@ -15,16 +15,14 @@ import messageRoutes from "./routes/message.js";
 import { register } from "./controllers/auth.js";
 import { createPost } from "./controllers/posts.js";
 import { verifyToken } from "./middleware/auth.js";
-import User from "./models/User.js";
-import Post from "./models/Post.js";
-import { users, posts } from "./data/index.js";
-import { app, server } from "./socket/socket.js";
+import {app, server} from "./socket/socket.js";
+
+
 
 // CONFIGURATIONS
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 dotenv.config();
-// const app = express();
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -32,7 +30,7 @@ app.use(morgan("common"));
 app.use(bodyParser.json({ limit: "30mb", extended: true }));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true }));
 app.use(cors({
-    origin: process.env.FRONTEND_URL,
+    origin: process.env.FRONTEND_URL, // Ensure this matches your frontend URL
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     optionsSuccessStatus: 204
@@ -61,24 +59,9 @@ app.use("/posts", postRoutes);
 app.use("/messages", messageRoutes);
 
 // SERVE REACT APP
-const buildPath = path.join(__dirname, './../client/build');
-app.use(express.static(buildPath));
-
-// Middleware to set MIME type for CSS files
-app.use((req, res, next) => {
-  if (req.url.endsWith('.css')) {
-    res.setHeader('Content-Type', 'text/css');
-  }
-  next();
-});
-
-// Handle React routing, return all requests to React app
+app.use(express.static(path.join(__dirname, './../client/build')));
 app.get('*', (req, res) => {
-  res.sendFile(path.join(buildPath, 'index.html'), (err) => {
-    if (err) {
-      res.status(500).send(err);
-    }
-  });
+  res.sendFile(path.join(__dirname, './../client/build/index.html'));
 });
 
 // MONGOOSE SETUP
@@ -95,3 +78,4 @@ mongoose.connect(process.env.MONGO_URL, {
   // Post.insertMany(posts);
 })
 .catch((error) => console.log(`${error} did not connect`));
+

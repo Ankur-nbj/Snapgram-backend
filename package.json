@@ -20,8 +20,8 @@
         "socket.io": "^4.7.5"
     },
     "devDependencies": {
-        "nodemon": "^2.0.22",
-        "eslint": "^8.36.0"
+        "eslint": "^8.36.0",
+        "nodemon": "^2.0.22"
     },
     "scripts": {
         "start": "node index.js",
@@ -31,7 +31,12 @@
     "engines": {
         "node": ">=14.0.0"
     },
-    "keywords": ["node", "express", "mongodb", "socket.io"],
+    "keywords": [
+        "node",
+        "express",
+        "mongodb",
+        "socket.io"
+    ],
     "author": "Your Name",
     "license": "ISC"
 }

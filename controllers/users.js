@@ -101,9 +101,6 @@ export const deleteUser = async (req, res) => {
 
 export const updateUserProfile = async (req, res) => {
   try {
-    // console.log("Request received in updateUserProfile"); // Log to check if request reaches here
-    // console.log("Request Body:", req.body);
-    // console.log("Uploaded File:", req.file);
 
     const { id } = req.params;
     const { firstName, lastName, location, occupation } = req.body;
